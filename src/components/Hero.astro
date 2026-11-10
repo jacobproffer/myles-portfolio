@@ -1,20 +1,50 @@
 ---
-import Container from "@components/Container.astro";
-
 interface Props {
-  headline: string;
+  first: string;
+  last: string;
 }
 
-const { headline } = Astro.props;
+const { first, last } = Astro.props;
 ---
 
-<section>
-  <Container>
-    {
-      headline && (
-        <h1 class="font-medium text-xl leading-8 text-balance">{headline}</h1>
-      )
-    }
-    <slot />
-  </Container>
+<section id="top" class="relative flex min-h-svh flex-col justify-end overflow-hidden pt-28 pb-[var(--margin)]" data-hero>
+  <div class="grid-site label mb-auto gap-y-6">
+    <p class="col-span-3 md:col-span-2 md:col-start-4" data-reveal>
+      (Role)<br />
+      Art Director,<br />
+      Elegant Seagulls
+    </p>
+    <p class="col-span-3 md:col-span-2" data-reveal>
+      (Based)<br />
+      Marquette, MI<br />
+      <span data-coords>46.5436° N, 87.3954° W</span>
+    </p>
+    <p class="col-span-6 md:col-span-3 md:col-start-10 md:text-right" data-reveal>
+      Lorem ipsum dolor sit amet, consectetur <br class="hidden md:block" />
+      adipiscing elit. Sed do eiusmod tempor.<br />
+      <span class="text-hit">● Available for select projects</span>
+    </p>
+  </div>
+
+  <div class="px-[var(--margin)]">
+    <p class="grid-site label -mx-[var(--margin)] mb-3 items-end">
+      <span class="col-span-3" data-reveal>[M—K] Portfolio, Vol. 01</span>
+      <span class="col-span-3 text-right md:col-span-3 md:col-start-10" data-reveal>©2026 — Scroll ↓</span>
+    </p>
+
+    <h1 class="sr-only">{first} {last}, Art Director</h1>
+
+    <div aria-hidden="true" class="display relative leading-[0.78] select-none" data-fit data-wdth-letters>
+      {first.split("").map((ch) => <span class="inline-block will-change-transform" data-letter>{ch}</span>)}
+    </div>
+
+    <div aria-hidden="true" class="grid-site -mx-[var(--margin)] mt-2 items-end md:mt-0">
+      <p class="label col-span-2 hidden md:block" data-reveal>
+        Fig. 1<br />The name,<br />stretched.
+      </p>
+      <div class="col-span-6 md:col-span-8 md:col-start-5">
+        <div class="serif-i text-right leading-[0.9]" data-fit data-split-chars>{last}</div>
+      </div>
+    </div>
+  </div>
 </section>

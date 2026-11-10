@@ -1,0 +1,54 @@
+---
+/* Selected work index. Hovering a row shows a floating preview that follows the cursor. */
+const projects = [
+  { title: "Lorem Ipsum", client: "Dolor Co.", role: "Art Direction", year: "2026",
+    art: "radial-gradient(circle at 30% 40%, #f2f0eb 0 18%, transparent 18.5%), repeating-linear-gradient(90deg, #0a0a0a 0 14px, #1c1c1c 14px 28px)" },
+  { title: "Sit Amet", client: "Consectetur", role: "Brand Identity", year: "2025",
+    art: "conic-gradient(from 90deg at 50% 50%, #ff3b00, #0a0a0a 25%, #f2f0eb 50%, #0a0a0a 75%, #ff3b00)" },
+  { title: "Adipiscing", client: "Elit Studio", role: "Web Design", year: "2025",
+    art: "repeating-radial-gradient(circle at 70% 70%, #f2f0eb 0 2px, #0a0a0a 2px 16px)" },
+  { title: "Tempor Inc.", client: "Incididunt", role: "Creative Direction", year: "2024",
+    art: "linear-gradient(135deg, #0a0a0a 0 40%, #ff3b00 40% 60%, #f2f0eb 60%)" },
+  { title: "Magna Aliqua", client: "Ut Enim", role: "Campaign", year: "2024",
+    art: "repeating-conic-gradient(#f2f0eb 0 25%, #0a0a0a 0 50%) 0 0 / 48px 48px" },
+  { title: "Veniam", client: "Quis Nostrud", role: "Motion System", year: "2023",
+    art: "radial-gradient(ellipse at 50% 120%, #ff3b00 0 30%, #0a0a0a 60%), #0a0a0a" },
+];
+---
+
+<section id="work" class="relative py-[12vh]" data-work>
+  <div class="grid-site mb-10 items-end gap-y-4">
+    <p class="label col-span-3 md:col-span-2" data-reveal>(02) — Selected Work</p>
+    <h2 class="display col-span-6 text-[clamp(3rem,11vw,12rem)] md:col-span-8 md:row-start-1 md:col-start-3" data-split-chars>
+      Work<span class="serif-i text-hit">(s)</span>
+    </h2>
+    <p class="label col-span-3 text-right text-mute md:col-span-2 md:col-start-11 md:row-start-1" data-reveal>
+      2019 — 2026<br />{String(projects.length).padStart(2, "0")} Entries
+    </p>
+  </div>
+
+  <ul class="border-t border-line" data-work-list>
+    {
+      projects.map((p, i) => (
+        <li class="group relative border-b border-line" data-work-row data-art={p.art}>
+          <a href="#" class="grid-site relative z-[1] items-baseline py-5 md:py-6" data-cursor aria-label={`${p.title} — ${p.client}, ${p.year}`}>
+            <span class="label col-span-1 text-mute">{String(i + 1).padStart(2, "0")}</span>
+            <span class="display col-span-5 text-[clamp(1.75rem,5vw,5.5rem)] whitespace-nowrap transition-[font-stretch,color] duration-700 ease-expo group-hover:text-hit md:col-span-6 group-hover:[font-stretch:120%]">
+              {p.title}
+            </span>
+            <span class="label col-span-3 col-start-2 mt-2 md:col-span-2 md:col-start-8 md:mt-0">{p.client}</span>
+            <span class="label col-span-2 mt-2 text-mute md:col-span-2 md:mt-0">{p.role}</span>
+            <span class="label col-span-1 mt-2 text-right md:col-span-1 md:col-start-12 md:mt-0">{p.year}</span>
+          </a>
+          <span class="pointer-events-none absolute inset-0 z-0 origin-bottom scale-y-0 bg-paper/[0.04] transition-transform duration-500 ease-expo group-hover:scale-y-100" />
+        </li>
+      ))
+    }
+  </ul>
+
+  <!-- Floating preview -->
+  <div class="pointer-events-none fixed top-0 left-0 z-40 hidden aspect-[4/5] w-[22vw] max-w-sm overflow-hidden md:block" data-preview aria-hidden="true">
+    <div class="absolute inset-0 scale-125" data-preview-art></div>
+    <span class="label absolute bottom-2 left-2 bg-ink px-1.5 py-0.5 text-paper">Placeholder</span>
+  </div>
+</section>

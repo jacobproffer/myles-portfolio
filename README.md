@@ -1,4 +1,4 @@
-# Astro Starter
+# Myles' Portfolio Site
 
 Made with Astro and Tailwind.
 

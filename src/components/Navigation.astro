@@ -1,1 +1,25 @@
-<nav aria-label="primary"></nav>
+---
+const links = [
+  { href: "#work", label: "Work", n: "01" },
+  { href: "#about", label: "About", n: "02" },
+  { href: "#contact", label: "Contact", n: "03" },
+];
+---
+
+<nav aria-label="primary" class="hidden md:col-span-6 md:col-start-4 md:block">
+  <ul class="label flex justify-center gap-8">
+    {
+      links.map((l) => (
+        <li>
+          <a href={l.href} class="group inline-flex gap-1.5" data-cursor>
+            <span class="text-mute">{l.n}</span>
+            <span class="relative">
+              {l.label}
+              <span class="absolute -bottom-0.5 left-0 h-px w-full origin-right scale-x-0 bg-current transition-transform duration-500 ease-expo group-hover:origin-left group-hover:scale-x-100" />
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>

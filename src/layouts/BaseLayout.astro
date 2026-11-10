@@ -17,7 +17,11 @@ const { pageTitle, pageDescription } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#0a0a0a" />
     <SiteSEO seo={{ title: pageTitle, description: pageDescription }} />
+    <script is:inline>
+      document.documentElement.classList.add("js");
+    </script>
   </head>
   <body>
     <Header />
@@ -25,5 +29,20 @@ const { pageTitle, pageDescription } = Astro.props;
       <slot />
     </main>
     <Footer />
+
+    <!-- Global layers -->
+    <div class="grid-overlay" aria-hidden="true">
+      <div class="grid-site">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <span class:list={[i >= 6 && "hidden md:block"]} />
+        ))}
+      </div>
+    </div>
+    <div class="cursor" aria-hidden="true"><div class="cursor__dot"></div></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <script>
+      import "../scripts/main.ts";
+    </script>
   </body>
 </html>
