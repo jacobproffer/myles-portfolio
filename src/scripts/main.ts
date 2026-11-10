@@ -252,24 +252,41 @@ function workPreview() {
   const yTo = gsap.quickTo(preview, "y", { duration: 0.6, ease: "power3" });
   const rTo = gsap.quickTo(preview, "rotate", { duration: 0.8, ease: "power3" });
   let lastX = 0;
+  let px = -1;
+  let py = -1;
+  let current: HTMLElement | null = null;
+
+  // Hit-test what's under the pointer. Runs on pointer move AND on scroll,
+  // because scrolling moves rows out from under a still cursor without
+  // firing any pointerenter/leave events.
+  const sync = () => {
+    const hit = px < 0 ? null : document.elementFromPoint(px, py);
+    const row = hit?.closest<HTMLElement>("[data-work-row]") ?? null;
+    if (row === current) return;
+    current = row;
+    if (row) {
+      art.style.background = row.dataset.art ?? "";
+      gsap.fromTo(art, { scale: 1.4 }, { scale: 1.1, duration: 1, ease: "expo.out", overwrite: "auto" });
+      gsap.to(preview, { scale: 1, autoAlpha: 1, duration: 0.6, ease: "expo.out", overwrite: "auto" });
+    } else {
+      gsap.to(preview, { scale: 0, autoAlpha: 0, duration: 0.5, ease: "expo.out", overwrite: "auto" });
+    }
+  };
 
   window.addEventListener("pointermove", (e) => {
-    xTo(e.clientX);
-    yTo(e.clientY);
-    rTo(gsap.utils.clamp(-14, 14, (e.clientX - lastX) * 0.6));
-    lastX = e.clientX;
+    px = e.clientX;
+    py = e.clientY;
+    xTo(px);
+    yTo(py);
+    rTo(gsap.utils.clamp(-14, 14, (px - lastX) * 0.6));
+    lastX = px;
+    sync();
   });
-
-  $$("[data-work-row]").forEach((row) => {
-    row.addEventListener("pointerenter", () => {
-      art.style.background = row.dataset.art ?? "";
-      gsap.fromTo(art, { scale: 1.4 }, { scale: 1.1, duration: 1, ease: "expo.out" });
-      gsap.to(preview, { scale: 1, autoAlpha: 1, duration: 0.6, ease: "expo.out" });
-    });
+  window.addEventListener("scroll", sync, { passive: true });
+  document.documentElement.addEventListener("pointerleave", () => {
+    px = py = -1;
+    sync();
   });
-  $("[data-work-list]")!.addEventListener("pointerleave", () =>
-    gsap.to(preview, { scale: 0, autoAlpha: 0, duration: 0.5, ease: "expo.out" }),
-  );
 }
 
 /* ------------------------------------------------------------------
