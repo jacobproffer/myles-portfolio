@@ -35,6 +35,11 @@
 }
 
 html {
+  /* With html non-visible, body's overflow no longer propagates to the
+     viewport, so body's `overflow-x: clip` below clips body itself — the
+     same in every browser, so no horizontal scrollbar.
+     `clip` (not `hidden`) keeps position: sticky working. */
+  overflow-x: clip;
   background: var(--color-ink);
   color: var(--color-paper);
   -webkit-font-smoothing: antialiased;
@@ -139,6 +144,29 @@ html.show-grid .grid-overlay {
 html.cursor-hover .cursor__dot {
   transform: scale(4.5);
 }
+.cursor__label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  translate: -50% -50%;
+  color: var(--color-ink);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+/* Over a draggable card: big dot with a "Drag" label (no blend so it stays legible) */
+html.cursor-drag .cursor {
+  mix-blend-mode: normal;
+}
+html.cursor-drag .cursor__dot {
+  transform: scale(7);
+  background: var(--color-hit);
+}
+html.cursor-drag .cursor__label {
+  opacity: 1;
+}
+html.cursor-grabbing .cursor__dot {
+  transform: scale(5.5);
+}
 @media (hover: none) {
   .cursor {
     display: none;
@@ -147,21 +175,24 @@ html.cursor-hover .cursor__dot {
 
 /* Film grain */
 .grain {
+  /* Sized to the viewport; the texture moves, not the element,
+     so nothing ever extends past the screen edges. */
   position: fixed;
-  inset: -50%;
+  inset: 0;
   z-index: 80;
   pointer-events: none;
   opacity: 0.07;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
   animation: grain 0.9s steps(6) infinite;
 }
 @keyframes grain {
-  0% { transform: translate(0, 0); }
-  20% { transform: translate(-6%, 4%); }
-  40% { transform: translate(5%, -7%); }
-  60% { transform: translate(-3%, 8%); }
-  80% { transform: translate(7%, 2%); }
-  100% { transform: translate(0, 0); }
+  0% { background-position: 0 0; }
+  20% { background-position: -37px 23px; }
+  40% { background-position: 51px -64px; }
+  60% { background-position: -19px 88px; }
+  80% { background-position: 72px 14px; }
+  100% { background-position: 0 0; }
 }
 
 /* Elements that animate in start hidden only when JS is running */

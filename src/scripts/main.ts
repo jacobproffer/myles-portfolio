@@ -1,9 +1,11 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
+import { Draggable } from "gsap/Draggable";
+import { InertiaPlugin } from "gsap/InertiaPlugin";
 import Lenis from "lenis";
 
-gsap.registerPlugin(ScrollTrigger, SplitText);
+gsap.registerPlugin(ScrollTrigger, SplitText, Draggable, InertiaPlugin);
 
 const $ = <T extends Element = HTMLElement>(s: string, root: ParentNode = document) =>
   root.querySelector<T>(s);
@@ -98,8 +100,10 @@ function cursor() {
     yTo(e.clientY);
   });
   document.addEventListener("pointerover", (e) => {
-    const hit = (e.target as HTMLElement).closest("a, button, [data-cursor]");
-    root.classList.toggle("cursor-hover", !!hit);
+    const t = e.target as HTMLElement;
+    const drag = !!t.closest("[data-cursor-drag]");
+    root.classList.toggle("cursor-drag", drag);
+    root.classList.toggle("cursor-hover", !drag && !!t.closest("a, button, [data-cursor]"));
   });
 
   $$("[data-magnetic]").forEach((m) => {
@@ -240,53 +244,117 @@ function reveals() {
 }
 
 /* ------------------------------------------------------------------
-   Work index hover preview
+   Work board: square cards that reveal on scroll and, on fine-pointer
+   devices, can be dragged and thrown, constrained to the board.
 ------------------------------------------------------------------- */
-function workPreview() {
-  const preview = $("[data-preview]");
-  const art = $("[data-preview-art]");
-  if (!preview || !art || !finePointer) return;
+function workBoard() {
+  const board = $("[data-work-board]");
+  if (!board) return;
+  const cards = $$("[data-work-card]", board);
 
-  gsap.set(preview, { xPercent: -50, yPercent: -50, scale: 0, autoAlpha: 0 });
-  const xTo = gsap.quickTo(preview, "x", { duration: 0.6, ease: "power3" });
-  const yTo = gsap.quickTo(preview, "y", { duration: 0.6, ease: "power3" });
-  const rTo = gsap.quickTo(preview, "rotate", { duration: 0.8, ease: "power3" });
-  let lastX = 0;
-  let px = -1;
-  let py = -1;
-  let current: HTMLElement | null = null;
-
-  // Hit-test what's under the pointer. Runs on pointer move AND on scroll,
-  // because scrolling moves rows out from under a still cursor without
-  // firing any pointerenter/leave events.
-  const sync = () => {
-    const hit = px < 0 ? null : document.elementFromPoint(px, py);
-    const row = hit?.closest<HTMLElement>("[data-work-row]") ?? null;
-    if (row === current) return;
-    current = row;
-    if (row) {
-      art.style.background = row.dataset.art ?? "";
-      gsap.fromTo(art, { scale: 1.4 }, { scale: 1.1, duration: 1, ease: "expo.out", overwrite: "auto" });
-      gsap.to(preview, { scale: 1, autoAlpha: 1, duration: 0.6, ease: "expo.out", overwrite: "auto" });
-    } else {
-      gsap.to(preview, { scale: 0, autoAlpha: 0, duration: 0.5, ease: "expo.out", overwrite: "auto" });
-    }
-  };
-
-  window.addEventListener("pointermove", (e) => {
-    px = e.clientX;
-    py = e.clientY;
-    xTo(px);
-    yTo(py);
-    rTo(gsap.utils.clamp(-14, 14, (px - lastX) * 0.6));
-    lastX = px;
-    sync();
+  // Reveal: each card wipes up from the bottom (on the inner element,
+  // so it never fights the drag transform on the card itself).
+  cards.forEach((card, i) => {
+    const inner = $("[data-card-inner]", card)!;
+    const art = $("[data-card-art]", card)!;
+    gsap.fromTo(
+      inner,
+      { clipPath: "inset(100% 0% 0% 0%)" },
+      {
+        clipPath: "inset(0% 0% 0% 0%)",
+        duration: 1.4,
+        ease: "expo.out",
+        delay: (i % 3) * 0.12,
+        scrollTrigger: { trigger: card, start: "top 90%", once: true },
+      },
+    );
+    gsap.fromTo(
+      art,
+      { yPercent: -6 },
+      { yPercent: 6, ease: "none", scrollTrigger: { trigger: card, start: "top bottom", end: "bottom top", scrub: true } },
+    );
   });
-  window.addEventListener("scroll", sync, { passive: true });
-  document.documentElement.addEventListener("pointerleave", () => {
-    px = py = -1;
-    sync();
+
+  if (!finePointer) return;
+
+  let z = 10;
+  const drags = cards.map((card) => {
+    const rTo = gsap.quickTo(card, "rotation", { duration: 0.5, ease: "power3" });
+    let lastX = 0;
+
+    return Draggable.create(card, {
+      type: "x,y",
+      bounds: board,
+      inertia: true,
+      edgeResistance: 0.9,
+      zIndexBoost: false,
+      minimumMovement: 4,
+      onPress() {
+        card.style.zIndex = String(++z);
+        lastX = this.x;
+        gsap.to(card, { scale: 1.035, duration: 0.4, ease: "expo.out", overwrite: "auto" });
+        root.classList.add("cursor-grabbing");
+      },
+      onDrag() {
+        // Tilt in the direction of travel
+        rTo(gsap.utils.clamp(-10, 10, (this.x - lastX) * 0.8));
+        lastX = this.x;
+      },
+      onThrowUpdate() {
+        rTo(gsap.utils.clamp(-10, 10, (this.x - lastX) * 0.8));
+        lastX = this.x;
+      },
+      onRelease() {
+        gsap.to(card, { scale: 1, duration: 0.6, ease: "expo.out", overwrite: "auto" });
+        root.classList.remove("cursor-grabbing");
+        if (!this.isThrowing) rTo(0);
+      },
+      onThrowComplete() {
+        rTo(0);
+      },
+    })[0];
   });
+
+  const syncDrags = () => drags.forEach((d) => d.update());
+
+  $("[data-board-reset]")?.addEventListener("click", () => {
+    drags.forEach((d) => d.tween?.kill());
+    gsap.to(cards, {
+      x: 0,
+      y: 0,
+      rotation: 0,
+      duration: 1.2,
+      ease: "expo.inOut",
+      stagger: { each: 0.05, from: "random" },
+      onComplete: syncDrags,
+    });
+  });
+
+  $("[data-board-scatter]")?.addEventListener("click", () => {
+    drags.forEach((d) => d.tween?.kill());
+    const bw = board.clientWidth;
+    const bh = board.clientHeight;
+    cards.forEach((card) => {
+      // Card's resting (grid) position inside the board, ignoring transforms
+      const minX = -card.offsetLeft;
+      const maxX = bw - card.offsetLeft - card.offsetWidth;
+      const minY = -card.offsetTop;
+      const maxY = bh - card.offsetTop - card.offsetHeight;
+      card.style.zIndex = String(++z);
+      gsap.to(card, {
+        x: gsap.utils.random(minX, maxX),
+        y: gsap.utils.random(minY, maxY),
+        rotation: gsap.utils.random(-8, 8),
+        duration: 1.2,
+        ease: "expo.inOut",
+        delay: gsap.utils.random(0, 0.2),
+        onComplete: syncDrags,
+      });
+    });
+  });
+
+  // Keep dropped cards inside the board when the window resizes
+  window.addEventListener("resize", () => drags.forEach((d) => d.applyBounds(board)));
 }
 
 /* ------------------------------------------------------------------
@@ -380,7 +448,7 @@ async function boot() {
   splitChars();
   scrubWords();
   reveals();
-  workPreview();
+  workBoard();
   cylinder();
   marquee();
 

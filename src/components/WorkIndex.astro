@@ -1,5 +1,9 @@
 ---
-/* Selected work index. Hovering a row shows a floating preview that follows the cursor. */
+/*
+  Selected work as a large square grid.
+  On fine-pointer devices each card can be dragged (and thrown) around,
+  constrained to the board so nothing ever overflows the page.
+*/
 const projects = [
   { title: "Lorem Ipsum", client: "Dolor Co.", role: "Art Direction", year: "2026",
     art: "radial-gradient(circle at 30% 40%, #f2f0eb 0 18%, transparent 18.5%), repeating-linear-gradient(90deg, #0a0a0a 0 14px, #1c1c1c 14px 28px)" },
@@ -27,28 +31,64 @@ const projects = [
     </p>
   </div>
 
-  <ul class="border-t border-line" data-work-list>
-    {
-      projects.map((p, i) => (
-        <li class="group relative border-b border-line" data-work-row data-art={p.art}>
-          <a href="#" class="grid-site relative z-[1] items-baseline py-5 md:py-6" data-cursor aria-label={`${p.title} — ${p.client}, ${p.year}`}>
-            <span class="label col-span-1 text-mute">{String(i + 1).padStart(2, "0")}</span>
-            <span class="display col-span-5 text-[clamp(1.75rem,5vw,5.5rem)] whitespace-nowrap transition-[font-stretch,color] duration-700 ease-expo group-hover:text-hit md:col-span-6 group-hover:[font-stretch:120%]">
-              {p.title}
-            </span>
-            <span class="label col-span-3 col-start-2 mt-2 md:col-span-2 md:col-start-8 md:mt-0">{p.client}</span>
-            <span class="label col-span-2 mt-2 text-mute md:col-span-2 md:mt-0">{p.role}</span>
-            <span class="label col-span-1 mt-2 text-right md:col-span-1 md:col-start-12 md:mt-0">{p.year}</span>
-          </a>
-          <span class="pointer-events-none absolute inset-0 z-0 origin-bottom scale-y-0 bg-paper/[0.04] transition-transform duration-500 ease-expo group-hover:scale-y-100" />
-        </li>
-      ))
-    }
-  </ul>
+  <!-- Board controls (drag-capable devices only) -->
+  <div class="grid-site label mb-4 hidden items-center [@media(hover:hover)_and_(pointer:fine)]:grid" data-board-controls>
+    <p class="col-span-6 text-mute md:col-span-6">
+      <span class="text-hit">✦</span> Drag &amp; throw the work around. It stays inside the frame.
+    </p>
+    <div class="col-span-6 flex justify-end gap-2 md:col-span-6">
+      <button type="button" class="cursor-pointer border border-line px-3 py-1.5 transition-colors hover:border-paper" data-board-scatter data-cursor>
+        Scatter
+      </button>
+      <button type="button" class="cursor-pointer border border-line px-3 py-1.5 transition-colors hover:border-paper" data-board-reset data-cursor>
+        Reset grid
+      </button>
+    </div>
+  </div>
 
-  <!-- Floating preview -->
-  <div class="pointer-events-none fixed top-0 left-0 z-40 hidden aspect-[4/5] w-[22vw] max-w-sm overflow-hidden md:block" data-preview aria-hidden="true">
-    <div class="absolute inset-0 scale-125" data-preview-art></div>
-    <span class="label absolute bottom-2 left-2 bg-ink px-1.5 py-0.5 text-paper">Placeholder</span>
+  <div class="px-[var(--margin)]">
+    <!-- The board is the drag bounds: no padding, so cards can't enter the page margins -->
+    <ul class="relative grid grid-cols-6 gap-[var(--gutter)] md:grid-cols-12" data-work-board>
+      {
+        projects.map((p, i) => (
+          <li class="relative col-span-6 sm:col-span-3 md:col-span-4" data-work-card>
+            <a
+              href="#"
+              class="group relative block aspect-square overflow-hidden bg-[#141414] outline-offset-4 select-none"
+              aria-label={`${p.title} — ${p.client}, ${p.role}, ${p.year}`}
+              draggable="false"
+              data-cursor-drag
+              data-card-inner
+            >
+              <div
+                class="absolute -inset-[8%] transition-transform duration-[1.2s] ease-expo group-hover:scale-[1.06]"
+                style={`background:${p.art}`}
+                data-card-art
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/10 to-ink/40" />
+
+              <div class="label absolute inset-x-0 top-0 flex justify-between p-4 text-paper">
+                <span>{String(i + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}</span>
+                <span>{p.year}</span>
+              </div>
+
+              <div class="absolute inset-x-0 bottom-0 p-4">
+                <p class="label mb-2 flex justify-between text-paper/70">
+                  <span>{p.client}</span>
+                  <span>{p.role}</span>
+                </p>
+                <h3 class="display text-[clamp(2rem,4.4vw,4.75rem)] leading-[0.85] text-paper transition-[font-stretch,color] duration-700 ease-expo group-hover:text-hit group-hover:[font-stretch:125%]">
+                  {p.title}
+                </h3>
+              </div>
+
+              <span class="label absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-ink px-1.5 py-0.5 text-mute">
+                Placeholder
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </section>
