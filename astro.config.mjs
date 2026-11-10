@@ -18,15 +18,6 @@ export default defineConfig({
     checkOrigin: true,
   },
   vite: {
-    plugins: [tailwindcss()], build: {
-      // Improve build performance
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            vendor: ['astro'],
-          },
-        },
-      },
-    },
+    plugins: [tailwindcss()],
   },
 });

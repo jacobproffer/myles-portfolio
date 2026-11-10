@@ -1,1 +1,43 @@
-<footer></footer>
+---
+const year = new Date().getFullYear();
+---
+
+<footer id="contact" class="relative overflow-hidden pt-[16vh]">
+  <div class="grid-site gap-y-8">
+    <p class="label col-span-6 md:col-span-2" data-reveal>(05) — Contact</p>
+    <div class="col-span-6 md:col-span-10">
+      <p class="display text-[clamp(2.75rem,9vw,10rem)]" data-split-chars>Let's make</p>
+      <p class="display text-[clamp(2.75rem,9vw,10rem)]">
+        <span data-split-chars>something</span> <span class="serif-i text-hit" data-split-chars>loud.</span>
+      </p>
+    </div>
+
+    <a
+      href="mailto:hello@example.com"
+      class="group label col-span-6 inline-flex items-center gap-3 md:col-span-4 md:col-start-3"
+      data-cursor
+      data-magnetic
+    >
+      <span class="grid size-14 place-items-center rounded-full bg-hit text-ink transition-transform duration-500 ease-expo group-hover:rotate-45">↗</span>
+      <span class="text-base normal-case md:text-lg">hello@example.com</span>
+    </a>
+  </div>
+
+  <div class="grid-site label mt-[14vh] gap-y-3 border-t border-line pt-4">
+    <ul class="col-span-3 md:col-span-3">
+      <li><a href="#" data-cursor class="hover:text-hit">Instagram</a></li>
+      <li><a href="#" data-cursor class="hover:text-hit">LinkedIn</a></li>
+    </ul>
+    <p class="col-span-3 md:col-span-3 md:col-start-5 text-mute">
+      Nothing here is solo work.<br />Lorem ipsum dolor sit amet.
+    </p>
+    <p class="col-span-3 md:col-span-2 md:col-start-9">Marquette, MI<br /><span data-clock>--:--:--</span></p>
+    <p class="col-span-3 text-right md:col-span-2 md:col-start-11">
+      ©{year}<br /><a href="#top" data-cursor class="hover:text-hit">Back to top ↑</a>
+    </p>
+  </div>
+
+  <div class="px-[var(--margin)] pt-6 pb-[var(--margin)]" aria-hidden="true">
+    <div class="display leading-[0.74] select-none" data-fit data-footer-name>Kedrowski</div>
+  </div>
+</footer>

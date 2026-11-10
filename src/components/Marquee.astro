@@ -1,0 +1,24 @@
+---
+/* Velocity-reactive marquee. Speeds up and flips direction with scroll. */
+interface Props {
+  words?: string[];
+}
+const { words = ["Lorem ipsum", "Dolor sit amet", "Consectetur", "Adipiscing elit"] } = Astro.props;
+---
+
+<section class="relative overflow-hidden border-y border-line py-6" aria-hidden="true" data-marquee>
+  <div class="flex w-max will-change-transform" data-marquee-track>
+    {
+      [0, 1].map(() => (
+        <div class="flex shrink-0 items-center">
+          {words.map((w, i) => (
+            <>
+              <span class:list={["display px-6 text-[clamp(3rem,9vw,9rem)]", i % 2 && "serif-i"]}>{w}</span>
+              <span class="inline-block size-[0.6em] shrink-0 rounded-full bg-hit text-[clamp(3rem,9vw,9rem)]" />
+            </>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+</section>

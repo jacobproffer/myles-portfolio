@@ -1,9 +1,10 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import Hero from "@components/Hero.astro";
-const pageTitle = "404";
 ---
 
-<BaseLayout pageTitle="404">
-  <Hero headline={pageTitle} />
+<BaseLayout pageTitle="404 — Myles Kedrowski">
+  <section class="flex min-h-svh flex-col justify-end px-[var(--margin)] pb-[var(--margin)]">
+    <p class="label mb-4">(Error) — This page wandered off. <a href="/" class="text-hit" data-cursor>Go home ↗</a></p>
+    <h1 class="display" data-fit>404</h1>
+  </section>
 </BaseLayout>

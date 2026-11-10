@@ -1,19 +1,23 @@
 ---
 import Navigation from "@components/Navigation.astro";
-import Container from "@components/Container.astro";
 ---
 
-<div>
-  <Container>
-    <div>
-      <header>
-        <a
-          class="fixed -top-full left-1/2 py-1 px-4 -translate-x-1/2 transition-top ease-in-out delay-150 focus:top-0 focus:outline-dashed focus:outline-black dark:focus:outline-orange focus:outline-1"
-          href="#content">Skip to main content</a
-        >
-        Myles Kedrowski
-      </header>
-      <Navigation />
+<header class="fixed inset-x-0 top-0 z-50 mix-blend-difference text-paper">
+  <a
+    class="label fixed -top-full left-1/2 -translate-x-1/2 bg-paper px-4 py-2 text-ink focus:top-2"
+    href="#content">Skip to main content</a
+  >
+  <div class="grid-site items-start pt-4">
+    <a href="#top" class="label col-span-3 md:col-span-3" data-cursor>
+      Myles Kedrowski<br />
+      <span class="text-mute">Art Director</span>
+    </a>
+    <Navigation />
+    <div class="label col-span-3 text-right md:col-span-3">
+      <span data-clock>--:--:--</span><br />
+      <button type="button" class="label cursor-pointer text-mute hover:text-paper" data-grid-toggle data-cursor>
+        [G] Grid
+      </button>
     </div>
-  </Container>
-</div>
+  </div>
+</header>

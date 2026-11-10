@@ -1,0 +1,52 @@
+---
+/* Colophon-style information table on the 12-column grid. */
+const rows = [
+  {
+    label: "On the clock",
+    cols: [
+      { h: "Services", items: ["Art Direction", "Brand Identity", "Website Design", "Motion Direction", "Campaign Concepting"] },
+      { h: "Industries", items: ["Lorem", "Ipsum", "Dolor Sit", "Amet"] },
+      { h: "Recognition", items: ["(3) Lorem Awards", "(5) Ipsum SOTD", "(2) Dolor Honors"] },
+    ],
+  },
+  {
+    label: "Off the clock",
+    cols: [
+      { h: "Interests", items: ["Music", "Film", "Photography", "Architecture", "Lorem"] },
+      { h: "Socials", items: ["Instagram", "LinkedIn", "Dribbble", "Are.na"] },
+      { h: "Currently", items: ["Reading — Lorem Ipsum", "Listening — Dolor Sit"] },
+    ],
+  },
+  {
+    label: "Set in",
+    cols: [
+      { h: "Display", items: ["Archivo Variable", "wdth 62—125"] },
+      { h: "Serif", items: ["Instrument Serif", "Italic"] },
+      { h: "Mono", items: ["JetBrains Mono"] },
+    ],
+  },
+];
+---
+
+<section class="relative py-[14vh]">
+  <div class="grid-site mb-12">
+    <p class="label col-span-6" data-reveal>(04) — Index</p>
+  </div>
+  {
+    rows.map((row) => (
+      <div class="grid-site label gap-y-6 border-t border-line pt-4 pb-14" data-reveal>
+        <p class="col-span-6 text-hit md:col-span-3">{row.label}</p>
+        {row.cols.map((c) => (
+          <div class="col-span-3 md:col-span-3">
+            <p class="mb-3 text-mute">{c.h}</p>
+            <ul>
+              {c.items.map((it) => (
+                <li>{it}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    ))
+  }
+</section>
