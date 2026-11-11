@@ -4,21 +4,37 @@
   On fine-pointer devices each card can be dragged (and thrown) around,
   constrained to the board so nothing ever overflows the page.
 */
-const projects = [
-  { title: "Lorem Ipsum", client: "Dolor Co.", role: "Art Direction", year: "2026",
+import { getProjects, urlFor, type Project } from "@lib/sanity";
+
+type Card = Omit<Project, "_id"> & { art?: string };
+
+// Shown until projects are published in Sanity.
+const placeholders: Card[] = [
+  { title: "Lorem Ipsum", client: "Dolor Co.", role: "Art Direction", year: 2026,
     art: "radial-gradient(circle at 30% 40%, #f2f0eb 0 18%, transparent 18.5%), repeating-linear-gradient(90deg, #0a0a0a 0 14px, #1c1c1c 14px 28px)" },
-  { title: "Sit Amet", client: "Consectetur", role: "Brand Identity", year: "2025",
+  { title: "Sit Amet", client: "Consectetur", role: "Brand Identity", year: 2025,
     art: "conic-gradient(from 90deg at 50% 50%, #ff3b00, #0a0a0a 25%, #f2f0eb 50%, #0a0a0a 75%, #ff3b00)" },
-  { title: "Adipiscing", client: "Elit Studio", role: "Web Design", year: "2025",
+  { title: "Adipiscing", client: "Elit Studio", role: "Web Design", year: 2025,
     art: "repeating-radial-gradient(circle at 70% 70%, #f2f0eb 0 2px, #0a0a0a 2px 16px)" },
-  { title: "Tempor Inc.", client: "Incididunt", role: "Creative Direction", year: "2024",
+  { title: "Tempor Inc.", client: "Incididunt", role: "Creative Direction", year: 2024,
     art: "linear-gradient(135deg, #0a0a0a 0 40%, #ff3b00 40% 60%, #f2f0eb 60%)" },
-  { title: "Magna Aliqua", client: "Ut Enim", role: "Campaign", year: "2024",
+  { title: "Magna Aliqua", client: "Ut Enim", role: "Campaign", year: 2024,
     art: "repeating-conic-gradient(#f2f0eb 0 25%, #0a0a0a 0 50%) 0 0 / 48px 48px" },
-  { title: "Veniam", client: "Quis Nostrud", role: "Motion System", year: "2023",
+  { title: "Veniam", client: "Quis Nostrud", role: "Motion System", year: 2023,
     art: "radial-gradient(ellipse at 50% 120%, #ff3b00 0 30%, #0a0a0a 60%), #0a0a0a" },
 ];
----
+
+const fetched = await getProjects();
+const projects: Card[] = fetched.length ? fetched : placeholders;
+
+const years = projects.map((p) => p.year).filter(Boolean);
+const yearRange = years.length ? `${Math.min(...years)} — ${Math.max(...years)}` : "";
+const pad = (n: number) => String(n).padStart(2, "0");
+
+// Square crops (respecting the hotspot), sized for 1–3 column layouts. Art bleeds 8% for parallax.
+const widths = [480, 720, 960, 1280, 1600];
+const src = (p: Card, w: number) => urlFor(p.cover!).width(w).height(w).fit("crop").url();
+------
 
 <section id="work" class="relative py-[12vh]" data-work>
   <div class="grid-site mb-10 items-end gap-y-4">
@@ -27,7 +43,7 @@ const projects = [
       Work<span class="serif-i text-hit">(s)</span>
     </h2>
     <p class="label col-span-3 text-right text-mute md:col-span-2 md:col-start-11 md:row-start-1" data-reveal>
-      2019 — 2026<br />{String(projects.length).padStart(2, "0")} Entries
+      {yearRange}<br />{pad(projects.length)} Entries
     </p>
   </div>
 
@@ -53,7 +69,9 @@ const projects = [
         projects.map((p, i) => (
           <li class="relative col-span-6 sm:col-span-3 md:col-span-4" data-work-card>
             <a
-              href="#"
+              href={p.link}
+              target={p.link ? "_blank" : undefined}
+              rel={p.link ? "noopener" : undefined}
               class="group relative block aspect-square overflow-hidden bg-[#141414] outline-offset-4 select-none"
               aria-label={`${p.title} — ${p.client}, ${p.role}, ${p.year}`}
               draggable="false"
@@ -62,13 +80,26 @@ const projects = [
             >
               <div
                 class="absolute -inset-[8%] transition-transform duration-[1.2s] ease-expo group-hover:scale-[1.06]"
-                style={`background:${p.art}`}
+                style={p.art && `background:${p.art}`}
                 data-card-art
-              />
+              >
+                {p.cover?.asset && (
+                  <img
+                    src={src(p, 960)}
+                    srcset={widths.map((w) => `${src(p, w)} ${w}w`).join(", ")}
+                    sizes="(min-width: 768px) 38vw, (min-width: 640px) 54vw, 108vw"
+                    alt={p.cover.alt ?? ""}
+                    loading={i < 3 ? "eager" : "lazy"}
+                    decoding="async"
+                    draggable="false"
+                    class="size-full object-cover"
+                  />
+                )}
+              </div>
               <div class="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/10 to-ink/40" />
 
               <div class="label absolute inset-x-0 top-0 flex justify-between p-4 text-paper">
-                <span>{String(i + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}</span>
+                <span>{pad(i + 1)} / {pad(projects.length)}</span>
                 <span>{p.year}</span>
               </div>
 
@@ -82,9 +113,11 @@ const projects = [
                 </h3>
               </div>
 
-              <span class="label absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-ink px-1.5 py-0.5 text-mute">
-                Placeholder
-              </span>
+              {p.art && (
+                <span class="label absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-ink px-1.5 py-0.5 text-mute">
+                  Placeholder
+                </span>
+              )}
             </a>
           </li>
         ))

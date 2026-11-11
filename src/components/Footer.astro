@@ -1,5 +1,13 @@
 ---
+import { getSiteSettings } from "@lib/sanity";
+
 const year = new Date().getFullYear();
+const settings = await getSiteSettings();
+const email = settings.email ?? "hello@example.com";
+const location = settings.location ?? "Marquette, MI";
+const socials = settings.socials?.length
+  ? settings.socials
+  : [{ label: "Instagram", url: "#" }, { label: "LinkedIn", url: "#" }];
 ---
 
 <footer id="contact" class="relative overflow-hidden pt-[16vh]">
@@ -13,25 +21,26 @@ const year = new Date().getFullYear();
     </div>
 
     <a
-      href="mailto:hello@example.com"
+      href={`mailto:${email}`}
       class="group label col-span-6 inline-flex items-center gap-3 md:col-span-4 md:col-start-3"
       data-cursor
       data-magnetic
     >
       <span class="grid size-14 place-items-center rounded-full bg-hit text-ink transition-transform duration-500 ease-expo group-hover:rotate-45">↗</span>
-      <span class="text-base normal-case md:text-lg">hello@example.com</span>
+      <span class="text-base normal-case md:text-lg">{email}</span>
     </a>
   </div>
 
   <div class="grid-site label mt-[14vh] gap-y-3 border-t border-line pt-4">
     <ul class="col-span-3 md:col-span-3">
-      <li><a href="#" data-cursor class="hover:text-hit">Instagram</a></li>
-      <li><a href="#" data-cursor class="hover:text-hit">LinkedIn</a></li>
+      {socials.map((s) => (
+        <li><a href={s.url} target="_blank" rel="noopener" data-cursor class="hover:text-hit">{s.label}</a></li>
+      ))}
     </ul>
     <p class="col-span-3 md:col-span-3 md:col-start-5 text-mute">
       Nothing here is solo work.<br />Lorem ipsum dolor sit amet.
     </p>
-    <p class="col-span-3 md:col-span-2 md:col-start-9">Marquette, MI<br /><span data-clock>--:--:--</span></p>
+    <p class="col-span-3 md:col-span-2 md:col-start-9">{location}<br /><span data-clock>--:--:--</span></p>
     <p class="col-span-3 text-right md:col-span-2 md:col-start-11">
       ©{year}<br /><a href="#top" data-cursor class="hover:text-hit">Back to top ↑</a>
     </p>

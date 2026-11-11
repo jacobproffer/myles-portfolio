@@ -1,28 +1,38 @@
 ---
+import { getHomePage, getSiteSettings } from "@lib/sanity";
+
 interface Props {
   first: string;
   last: string;
 }
 
 const { first, last } = Astro.props;
+const settings = await getSiteSettings();
+const home = await getHomePage();
+
+const role = settings.role ?? "Art Director";
+const company = settings.company ?? "Elegant Seagulls";
+const location = settings.location ?? "Marquette, MI";
+const available = settings.available ?? true;
+const availabilityText = settings.availabilityText || "Available for select projects";
+const blurb = home.heroBlurb ?? "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor.";
 ---
 
 <section id="top" class="relative flex min-h-svh flex-col justify-end overflow-hidden pt-28 pb-[var(--margin)]" data-hero>
   <div class="grid-site label mb-auto gap-y-6">
     <p class="col-span-3 md:col-span-2 md:col-start-4" data-reveal>
       (Role)<br />
-      Art Director,<br />
-      Elegant Seagulls
+      {role}{company && ","}<br />
+      {company}
     </p>
     <p class="col-span-3 md:col-span-2" data-reveal>
       (Based)<br />
-      Marquette, MI<br />
+      {location}<br />
       <span data-coords>46.5436° N, 87.3954° W</span>
     </p>
     <p class="col-span-6 md:col-span-3 md:col-start-10 md:text-right" data-reveal>
-      Lorem ipsum dolor sit amet, consectetur <br class="hidden md:block" />
-      adipiscing elit. Sed do eiusmod tempor.<br />
-      <span class="text-hit">● Available for select projects</span>
+      <span class="whitespace-pre-line">{blurb}</span>
+      {available && <><br /><span class="text-hit">● {availabilityText}</span></>}
     </p>
   </div>
 
@@ -32,7 +42,7 @@ const { first, last } = Astro.props;
       <span class="col-span-3 text-right md:col-span-3 md:col-start-10" data-reveal>©2026 — Scroll ↓</span>
     </p>
 
-    <h1 class="sr-only">{first} {last}, Art Director</h1>
+    <h1 class="sr-only">{first} {last}, {role}</h1>
 
     <div aria-hidden="true" class="display relative leading-[0.78] select-none" data-fit data-wdth-letters>
       {first.split("").map((ch) => <span class="inline-block will-change-transform" data-letter>{ch}</span>)}
