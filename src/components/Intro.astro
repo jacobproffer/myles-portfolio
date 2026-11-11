@@ -1,5 +1,18 @@
 ---
 /* Big statement paragraph with scroll-scrubbed word reveal + footnotes. */
+import { circled, getHomePage } from "@lib/sanity";
+
+const home = await getHomePage();
+const statement = home.introStatement?.[0];
+const footnotes = home.footnotes?.length
+  ? home.footnotes
+  : [
+      "Lorem ipsum dolor sit amet, the good idea usually arrives after the safe one.",
+      "Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
+    ];
+
+const markClasses: Record<string, string> = { serif: "serif-i", accent: "text-hit" };
+const supClass = "text-hit font-mono text-[0.25em] align-super";
 ---
 
 <section id="about" class="relative py-[18vh]">
@@ -7,15 +20,27 @@
     <p class="label col-span-6 md:col-span-2" data-reveal>(01) — Intro</p>
 
     <p class="display col-span-6 text-[clamp(2.25rem,6.4vw,7.5rem)] leading-[0.9] md:col-span-10" data-words>
-      Lorem ipsum, I'm <span class="serif-i text-hit">Myles</span>. An art director
-      shaping <span class="serif-i">brands</span><sup class="text-hit font-mono text-[0.25em] align-super">①</sup> and
-      digital worlds at <span class="serif-i">Elegant&nbsp;Seagulls</span><sup class="text-hit font-mono text-[0.25em] align-super">②</sup>. Dolor
-      sit amet, consectetur until it feels inevitable.
+      {
+        statement ? (
+          statement.children.map((child) =>
+            child._type === "footnoteRef" ? (
+              child.number && <sup class={supClass}>{circled(child.number)}</sup>
+            ) : child.marks?.length ? (
+              <span class:list={child.marks.map((m) => markClasses[m])}>{child.text}</span>
+            ) : (
+              child.text
+            ),
+          )
+        ) : (
+          <>
+            Lorem ipsum, I'm <span class="serif-i text-hit">Myles</span>. An art director shaping <span class="serif-i">brands</span><sup class={supClass}>①</sup> and digital worlds at <span class="serif-i">Elegant&nbsp;Seagulls</span><sup class={supClass}>②</sup>. Dolor sit amet, consectetur until it feels inevitable.
+          </>
+        )
+      }
     </p>
 
     <div class="label col-span-6 grid grid-cols-2 gap-6 text-mute md:col-span-4 md:col-start-3 md:grid-cols-2" data-reveal>
-      <p><span class="text-hit">①</span> Lorem ipsum dolor sit amet, the good idea usually arrives after the safe one.</p>
-      <p><span class="text-hit">②</span> Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</p>
+      {footnotes.map((note, i) => <p><span class="text-hit">{circled(i + 1)}</span> {note}</p>)}
     </div>
   </div>
 

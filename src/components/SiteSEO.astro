@@ -1,6 +1,12 @@
 ---
 import { SEO, type Props as SEOProps } from "astro-seo";
-const defaultImageFile = new URL("/images/social.jpg", Astro.url);
+import { getSiteSettings, urlFor } from "@lib/sanity";
+
+const settings = await getSiteSettings();
+const shareImage = settings.shareImage?.asset
+  ? urlFor(settings.shareImage).width(1200).height(630).fit("crop").url()
+  : new URL("/images/social.jpg", Astro.url).toString();
+const shareSize = settings.shareImage?.asset ? { width: 1200, height: 630 } : { width: 800, height: 1200 };
 
 interface Props {
   seo?: SEOProps;
@@ -10,26 +16,26 @@ const { seo } = Astro.props;
 
 const siteName = "Myles Kedrowski";
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const description =
+  seo?.description ?? settings.seoDescription ?? "Myles Kedrowski is the Art Director of Elegant Seagulls.";
 ---
 
 <SEO
   title={seo?.title}
-  description={seo?.description ??
-    "Myles Kedrowski is the Art Director of Elegant Seagulls."}
+  description={description}
   canonical={canonicalURL}
   openGraph={{
     basic: {
       url: canonicalURL,
-      title: seo?.title ?? "Astro Starter",
+      title: seo?.title ?? siteName,
       type: "website",
-      image: defaultImageFile.toString(),
+      image: shareImage,
     },
     image: {
-      url: defaultImageFile.toString(),
-      secureUrl: defaultImageFile.toString(),
+      url: shareImage,
+      secureUrl: shareImage,
       alt: "",
-      height: 1200,
-      width: 800,
+      ...shareSize,
     },
   }}
   extend={{
@@ -40,8 +46,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       },
       {
         name: "og:description",
-        content:
-          seo?.description ?? "Astro starter with Typescript and Tailwind.",
+        content: description,
       },
       {
         name: "og:site_name",

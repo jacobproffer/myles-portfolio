@@ -1,9 +1,9 @@
 ---
 /* Velocity-reactive marquee. Speeds up and flips direction with scroll. */
-interface Props {
-  words?: string[];
-}
-const { words = ["Lorem ipsum", "Dolor sit amet", "Consectetur", "Adipiscing elit"] } = Astro.props;
+import { getHomePage } from "@lib/sanity";
+
+const home = await getHomePage();
+const words = home.marquee?.length ? home.marquee : ["Lorem ipsum", "Dolor sit amet", "Consectetur", "Adipiscing elit"];
 ---
 
 <section class="relative overflow-hidden border-y border-line py-6" aria-hidden="true" data-marquee>

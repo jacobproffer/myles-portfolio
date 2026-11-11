@@ -1,20 +1,31 @@
 ---
 /* Colophon-style information table on the 12-column grid. */
-const rows = [
+import { getHomePage, getSiteSettings } from "@lib/sanity";
+
+const home = await getHomePage();
+const settings = await getSiteSettings();
+const list = (items: string[] | undefined, fallback: string[]) => (items?.length ? items : fallback);
+
+type Item = string | { label: string; url: string };
+const socials: Item[] = settings.socials?.length
+  ? settings.socials
+  : ["Instagram", "LinkedIn", "Dribbble", "Are.na"];
+
+const rows: { label: string; cols: { h: string; items: Item[] }[] }[] = [
   {
     label: "On the clock",
     cols: [
-      { h: "Services", items: ["Art Direction", "Brand Identity", "Website Design", "Motion Direction", "Campaign Concepting"] },
-      { h: "Industries", items: ["Lorem", "Ipsum", "Dolor Sit", "Amet"] },
-      { h: "Recognition", items: ["(3) Lorem Awards", "(5) Ipsum SOTD", "(2) Dolor Honors"] },
+      { h: "Services", items: list(home.services, ["Art Direction", "Brand Identity", "Website Design", "Motion Direction", "Campaign Concepting"]) },
+      { h: "Industries", items: list(home.industries, ["Lorem", "Ipsum", "Dolor Sit", "Amet"]) },
+      { h: "Recognition", items: list(home.recognition, ["(3) Lorem Awards", "(5) Ipsum SOTD", "(2) Dolor Honors"]) },
     ],
   },
   {
     label: "Off the clock",
     cols: [
-      { h: "Interests", items: ["Music", "Film", "Photography", "Architecture", "Lorem"] },
-      { h: "Socials", items: ["Instagram", "LinkedIn", "Dribbble", "Are.na"] },
-      { h: "Currently", items: ["Reading — Lorem Ipsum", "Listening — Dolor Sit"] },
+      { h: "Interests", items: list(home.interests, ["Music", "Film", "Photography", "Architecture", "Lorem"]) },
+      { h: "Socials", items: socials },
+      { h: "Currently", items: list(home.currently, ["Reading — Lorem Ipsum", "Listening — Dolor Sit"]) },
     ],
   },
   {
@@ -41,7 +52,11 @@ const rows = [
             <p class="mb-3 text-mute">{c.h}</p>
             <ul>
               {c.items.map((it) => (
-                <li>{it}</li>
+                <li>
+                  {typeof it === "string" ? it : (
+                    <a href={it.url} target="_blank" rel="noopener" class="hover:text-hit" data-cursor>{it.label} ↗</a>
+                  )}
+                </li>
               ))}
             </ul>
           </div>

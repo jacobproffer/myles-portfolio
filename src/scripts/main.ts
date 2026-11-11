@@ -367,7 +367,7 @@ function cylinder() {
   const items = $$("[data-cylinder-item]", wheel);
   const counter = $("[data-cylinder-count]");
   const step = 360 / items.length;
-  const unique = 7;
+  const unique = Number(wheel.dataset.unique) || items.length;
 
   const layout = () => {
     const h = items[0].offsetHeight;
@@ -390,7 +390,7 @@ function cylinder() {
       it.style.fontStretch = `${70 + 42 * c ** 6}%`;
       if (isFront) front = i;
     });
-    if (counter) counter.textContent = `${String((front % unique) + 1).padStart(2, "0")} / 0${unique}`;
+    if (counter) counter.textContent = `${String((front % unique) + 1).padStart(2, "0")} / ${String(unique).padStart(2, "0")}`;
   };
 
   const proxy = { angle: 0 };
