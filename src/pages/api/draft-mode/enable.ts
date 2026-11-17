@@ -28,7 +28,10 @@ export const GET: APIRoute = async ({request, redirect, url}) => {
     return new Response("Preview link expired. Reload the Preview tab in the Studio.", {status: 401});
   }
 
+  // Drafts only render on /preview (every other page is static), so always land there, even when
+  // the Studio asks for "/". Keep its query (e.g. the perspective) and any #section.
   const destination = new URL(result.redirectTo ?? "/preview", url);
+  destination.pathname = "/preview";
   destination.searchParams.set(PREVIEW_TOKEN_PARAM, await createPreviewToken());
   return redirect(destination.pathname + destination.search + destination.hash, 307);
 };
