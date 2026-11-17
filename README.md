@@ -21,9 +21,9 @@ Edits in Sanity can be previewed on the real site before they're published, from
 **Preview** tab in the Studio (Sanity's Presentation tool).
 
 - `/` is built ahead of time and only ever shows **published** content.
-- `/preview` is the same page rendered on request by a Netlify function. When it's opened from the
-  Studio, it shows **unpublished drafts**, updates as you type, and lets you click text to edit it.
-  Opened any other way, it shows published content. It's marked `noindex`.
+- `/preview` is the same page rendered on request by a Netlify function, showing **unpublished
+  drafts**. It only works from the Studio's Preview tab (it updates as you type and lets you click
+  text to edit it). Without a valid preview token it redirects to `/`. It's also marked `noindex`.
 
 When the Preview tab opens, the Studio calls `/api/draft-mode/enable` with a one-time secret. If it
 checks out, the site redirects to `/preview?preview-token=…`, a signed token that expires after
