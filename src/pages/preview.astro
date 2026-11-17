@@ -1,12 +1,14 @@
 ---
 /*
-  The home page rendered on request, for the Studio's Preview tab. Shows unpublished drafts when
-  the browser was signed into draft mode by /api/draft-mode/enable; otherwise published content.
+  The home page rendered on request with unpublished drafts, for the Studio's Preview tab.
+  Only reachable with a valid preview token from /api/draft-mode/enable; everyone else is sent to /.
 */
 import Home from "@components/Home.astro";
 import VisualEditing from "../preview/VisualEditing.astro";
 
 export const prerender = false;
+
+if (!Astro.locals.draftMode) return Astro.redirect("/", 302);
 ---
 
 <Home noindex>
