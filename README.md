@@ -25,9 +25,13 @@ Edits in Sanity can be previewed on the real site before they're published, from
   Studio, it shows **unpublished drafts**, updates as you type, and lets you click text to edit it.
   Opened any other way, it shows published content. It's marked `noindex`.
 
-The Studio signs a browser into draft mode through `/api/draft-mode/enable`, which checks a
-one-time secret and sets a cookie. Preview code lives in `src/preview/`, `src/middleware.ts`,
-`src/pages/preview.astro` and `src/pages/api/draft-mode/`.
+When the Preview tab opens, the Studio calls `/api/draft-mode/enable` with a one-time secret. If it
+checks out, the site redirects to `/preview?preview-token=…`, a signed token that expires after
+8 hours. No cookies are involved, so it works in any browser. If the tab says it can't connect
+after a long session, reload the Studio. Rotating `SANITY_API_READ_TOKEN` invalidates all tokens.
+
+Preview code lives in `src/preview/`, `src/middleware.ts`, `src/pages/preview.astro` and
+`src/pages/api/draft-mode/`.
 
 ### One-time setup
 

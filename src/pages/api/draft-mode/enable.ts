@@ -2,26 +2,33 @@ import type {APIRoute} from "astro";
 import {validatePreviewUrl} from "@sanity/preview-url-secret";
 import {SANITY_API_READ_TOKEN} from "astro:env/server";
 import {client} from "@lib/sanity";
-import {DRAFT_MODE_COOKIE, draftModeCookieOptions, draftModeCookieValue} from "../../../preview/draftMode";
+import {PREVIEW_TOKEN_PARAM, createPreviewToken} from "../../../preview/draftMode";
 
 export const prerender = false;
 
 /*
   Called by the Studio's Presentation tool with a one-time secret it stores in the dataset.
-  If the secret checks out, this browser gets the draft-mode cookie and is sent to /preview.
+  If the secret checks out, the browser is sent to /preview with a signed, expiring preview token.
 */
-export const GET: APIRoute = async ({request, cookies, redirect, url}) => {
-  if (!SANITY_API_READ_TOKEN) return new Response("Preview is not configured", {status: 500});
+export const GET: APIRoute = async ({request, redirect, url}) => {
+  if (!SANITY_API_READ_TOKEN) {
+    console.error("Draft mode: SANITY_API_READ_TOKEN is not set");
+    return new Response("Preview is not configured: SANITY_API_READ_TOKEN is missing.", {status: 500});
+  }
 
-  const {isValid, redirectTo = "/preview"} = await validatePreviewUrl(
-    client.withConfig({token: SANITY_API_READ_TOKEN}),
-    request.url,
-  ).catch((error) => {
-    console.error("Draft mode: could not validate the preview secret", error);
-    return {isValid: false, redirectTo: undefined};
-  });
-  if (!isValid) return new Response("Invalid secret", {status: 401});
+  let result;
+  try {
+    result = await validatePreviewUrl(client.withConfig({token: SANITY_API_READ_TOKEN}), request.url);
+  } catch (error) {
+    console.error("Draft mode: Sanity rejected the request (check SANITY_API_READ_TOKEN)", error);
+    return new Response("Preview error: Sanity rejected the read token. Check SANITY_API_READ_TOKEN.", {status: 500});
+  }
+  if (!result.isValid) {
+    console.warn("Draft mode: preview secret not found or expired");
+    return new Response("Preview link expired. Reload the Preview tab in the Studio.", {status: 401});
+  }
 
-  cookies.set(DRAFT_MODE_COOKIE, await draftModeCookieValue(), draftModeCookieOptions(url));
-  return redirect(redirectTo, 307);
+  const destination = new URL(result.redirectTo ?? "/preview", url);
+  destination.searchParams.set(PREVIEW_TOKEN_PARAM, await createPreviewToken());
+  return redirect(destination.pathname + destination.search + destination.hash, 307);
 };
