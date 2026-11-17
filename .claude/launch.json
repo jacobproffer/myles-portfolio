@@ -4,7 +4,7 @@
     {
       "name": "astro-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--", "--ignore-lock"],
+      "runtimeArgs": ["run", "dev"],
       "port": 4321
     }
   ]
