@@ -1,4 +1,10 @@
 @import "tailwindcss";
+/* Data/config code, not markup: keep its words from becoming utility classes. */
+@source not "../lib";
+@source not "../preview";
+@source not "../../astro.config.mjs";
+@source not "../../studio";
+@source not "../../README.md";
 @import "@fontsource-variable/archivo/wdth.css";
 @import "@fontsource/instrument-serif/400.css";
 @import "@fontsource/instrument-serif/400-italic.css";

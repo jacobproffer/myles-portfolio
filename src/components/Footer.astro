@@ -2,7 +2,7 @@
 import { getSiteSettings } from "@lib/sanity";
 
 const year = new Date().getFullYear();
-const settings = await getSiteSettings();
+const settings = await getSiteSettings(Astro.locals);
 const email = settings.email ?? "hello@example.com";
 const location = settings.location ?? "Marquette, MI";
 const socials = settings.socials?.length

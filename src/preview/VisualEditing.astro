@@ -1,0 +1,27 @@
+---
+/* Click-to-edit overlays and live refresh inside the Studio's Preview tab. Used by /preview only. */
+---
+
+{Astro.locals.draftMode && <meta name="sanity-draft-mode" content="on" />}
+
+<script>
+  // Load the Visual Editing bundle only when the page was rendered in draft mode.
+  if (document.querySelector('meta[name="sanity-draft-mode"]')) {
+    import("@sanity/visual-editing").then(({ enableVisualEditing }) => {
+      // The page is rendered on the server, so "refreshing" means reloading. Edits arrive as a
+      // burst of changes while typing, so wait for a short pause before reloading.
+      let timer: number | undefined;
+      enableVisualEditing({
+        refresh: (payload) => {
+          clearTimeout(timer);
+          if (payload.source === "manual") {
+            location.reload();
+            return new Promise(() => {});
+          }
+          timer = window.setTimeout(() => location.reload(), 600);
+          return false;
+        },
+      });
+    });
+  }
+</script>

@@ -2,7 +2,7 @@
 /* Big statement paragraph with scroll-scrubbed word reveal + footnotes. */
 import { circled, getHomePage } from "@lib/sanity";
 
-const home = await getHomePage();
+const home = await getHomePage(Astro.locals);
 const statement = home.introStatement?.[0];
 const footnotes = home.footnotes?.length
   ? home.footnotes
