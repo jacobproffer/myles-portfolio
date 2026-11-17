@@ -9,7 +9,7 @@ import {structure} from './structure'
   The site's /preview page shows drafts (see the root README → "Content preview").
   Set SANITY_STUDIO_SITE_URL in studio/.env.production before `sanity deploy`; defaults to the local dev server.
 */
-const siteUrl = process.env.SANITY_STUDIO_SITE_URL || 'http://localhost:4321'
+const siteUrl = (process.env.SANITY_STUDIO_SITE_URL || 'http://localhost:4321').replace(/\/+$/, '')
 
 // Everything currently renders on the one-page site.
 const homeLocation = {title: 'Home page', href: '/preview'}
