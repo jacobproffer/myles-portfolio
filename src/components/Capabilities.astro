@@ -2,7 +2,7 @@
 /* A 3D text cylinder that rotates as you scroll. */
 import { getHomePage } from "@lib/sanity";
 
-const home = await getHomePage();
+const home = await getHomePage(Astro.locals);
 const capabilities = home.capabilities?.length
   ? home.capabilities
   : ["Art Direction", "Brand Identity", "Digital Design", "Motion Systems", "Campaigns", "Type & Layout", "Creative Direction"];

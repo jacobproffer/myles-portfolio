@@ -1,0 +1,14 @@
+---
+/*
+  The home page rendered on request, for the Studio's Preview tab. Shows unpublished drafts when
+  the browser was signed into draft mode by /api/draft-mode/enable; otherwise published content.
+*/
+import Home from "@components/Home.astro";
+import VisualEditing from "../preview/VisualEditing.astro";
+
+export const prerender = false;
+---
+
+<Home noindex>
+  <VisualEditing />
+</Home>

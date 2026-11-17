@@ -24,7 +24,7 @@ const placeholders: Card[] = [
     art: "radial-gradient(ellipse at 50% 120%, #ff3b00 0 30%, #0a0a0a 60%), #0a0a0a" },
 ];
 
-const fetched = await getProjects();
+const fetched = await getProjects(Astro.locals);
 const projects: Card[] = fetched.length ? fetched : placeholders;
 
 const years = projects.map((p) => p.year).filter(Boolean);

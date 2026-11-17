@@ -2,8 +2,8 @@
 /* Colophon-style information table on the 12-column grid. */
 import { getHomePage, getSiteSettings } from "@lib/sanity";
 
-const home = await getHomePage();
-const settings = await getSiteSettings();
+const home = await getHomePage(Astro.locals);
+const settings = await getSiteSettings(Astro.locals);
 const list = (items: string[] | undefined, fallback: string[]) => (items?.length ? items : fallback);
 
 type Item = string | { label: string; url: string };

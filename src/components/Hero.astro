@@ -7,8 +7,8 @@ interface Props {
 }
 
 const { first, last } = Astro.props;
-const settings = await getSiteSettings();
-const home = await getHomePage();
+const settings = await getSiteSettings(Astro.locals);
+const home = await getHomePage(Astro.locals);
 
 const role = settings.role ?? "Art Director";
 const company = settings.company ?? "Elegant Seagulls";

@@ -2,7 +2,7 @@
 import { SEO, type Props as SEOProps } from "astro-seo";
 import { getSiteSettings, urlFor } from "@lib/sanity";
 
-const settings = await getSiteSettings();
+const settings = await getSiteSettings(Astro.locals);
 const shareImage = settings.shareImage?.asset
   ? urlFor(settings.shareImage).width(1200).height(630).fit("crop").url()
   : new URL("/images/social.jpg", Astro.url).toString();
@@ -22,6 +22,7 @@ const description =
 
 <SEO
   title={seo?.title}
+  noindex={seo?.noindex}
   description={description}
   canonical={canonicalURL}
   openGraph={{
