@@ -6,7 +6,7 @@ const settings = await getSiteSettings(Astro.locals);
 const shareImage = settings.shareImage?.asset
   ? urlFor(settings.shareImage).width(1200).height(630).fit("crop").url()
   : new URL("/images/social.jpg", Astro.url).toString();
-const shareSize = settings.shareImage?.asset ? { width: 1200, height: 630 } : { width: 800, height: 1200 };
+const shareSize = { width: 1200, height: 630 };
 
 interface Props {
   seo?: SEOProps;
@@ -35,12 +35,20 @@ const description =
     image: {
       url: shareImage,
       secureUrl: shareImage,
-      alt: "",
+      alt: `${siteName}, Art Director`,
       ...shareSize,
     },
   }}
   extend={{
+    link: [
+      { rel: "icon", href: "/favicon.ico", sizes: "32x32" },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "manifest", href: "/site.webmanifest" },
+    ],
     meta: [
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: shareImage },
       {
         name: "og:locale",
         content: "en_US",
